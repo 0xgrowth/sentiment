@@ -59,27 +59,8 @@ class PredictionResponse(BaseModel):
 
 
 # -----------------------------------------------------------------------------
-# Lifespan Events (Startup / Shutdown)
-# -----------------------------------------------------------------------------
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    logger.info(" Starting AI Market Tracker...")
-    # Initialize DB connections, model loading, schedulers here
-    yield
-    logger.info(" Shutting down AI Market Tracker...")
-
-
-# -----------------------------------------------------------------------------
 # FastAPI App Initialization
 # -----------------------------------------------------------------------------
-
-app = FastAPI(
-    title=APP_NAME,
-    version=APP_VERSION,
-    debug=DEBUG,
-    lifespan=lifespan,
-)
 
 settings = get_settings()
 
@@ -87,20 +68,25 @@ app = FastAPI(
     title=settings.app_name,
     version=settings.app_version,
     debug=settings.debug,
+    lifespan=lifespan,
 )
+
+# -----------------------------------------------------------------------------
+# Lifespan Events (Startup / Shutdown)
+# -----------------------------------------------------------------------------
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logger.info("Starting AI Market Tracker...")
+    await init_db()
+    yield
+    logger.info("Shutting down AI Market Tracker...")
 
 
 # -----------------------------------------------------------------------------
 # Middleware
 # -----------------------------------------------------------------------------
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=ALLOWED_ORIGINS,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 app.add_middleware(
     CORSMiddleware,
@@ -224,3 +210,9 @@ if __name__ == "__main__":
         reload=DEBUG,
     )
 
+@router.post("/", response_model=UserResponse)
+async def create_user(
+    payload: UserCreate,
+    db: AsyncSession = Depends(get_db),
+):
+    ...

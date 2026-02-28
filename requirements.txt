@@ -1,0 +1,78 @@
+# =============================================================================
+# Crypto Sentiment Tracker — Backend Python Dependencies
+# =============================================================================
+# Python >= 3.11 required
+#
+# Install:
+#   pip install -r requirements.txt
+#
+# Upgrade all to latest compatible:
+#   pip install -r requirements.txt --upgrade
+# =============================================================================
+
+
+# ── Web Framework ─────────────────────────────────────────────────────────────
+fastapi==0.115.6                # async web framework
+uvicorn[standard]==0.32.1       # ASGI server (includes websockets + httptools)
+python-multipart==0.0.20        # form / file upload parsing
+
+
+# ── Data Validation & Settings ────────────────────────────────────────────────
+pydantic==2.10.4                # data validation (FastAPI dependency)
+pydantic-settings==2.7.0        # .env file loading via BaseSettings
+
+
+# ── Database — SQLAlchemy ORM ─────────────────────────────────────────────────
+sqlalchemy==2.0.36              # async ORM core
+aiosqlite==0.20.0               # async SQLite driver (development)
+asyncpg==0.30.0                 # async PostgreSQL driver (production)
+alembic==1.14.0                 # database migrations
+
+
+# ── Anthropic / Claude AI ─────────────────────────────────────────────────────
+anthropic==0.40.0               # official Anthropic Python SDK (async support)
+
+
+# ── Market Data ───────────────────────────────────────────────────────────────
+yfinance==0.2.51                # Yahoo Finance market data
+pandas==2.2.3                   # yfinance dependency / data manipulation
+numpy==2.2.0                    # numerical operations
+
+
+# ── Task Scheduling ───────────────────────────────────────────────────────────
+apscheduler==3.10.4             # background job scheduler (AsyncIOScheduler)
+
+
+# ── HTTP Client ───────────────────────────────────────────────────────────────
+httpx==0.28.1                   # async HTTP client (Anthropic SDK dep + testing)
+aiohttp==3.11.11                # async HTTP (yfinance internals)
+
+
+# ── CORS / Middleware ─────────────────────────────────────────────────────────
+# fastapi includes starlette which handles CORSMiddleware natively
+starlette==0.41.3               # pinned to match fastapi==0.115.6
+
+
+# ── Logging & Observability ───────────────────────────────────────────────────
+python-json-logger==3.2.1       # structured JSON logging
+
+
+# ── Environment & Security ────────────────────────────────────────────────────
+python-dotenv==1.0.1            # .env loading (also used by pydantic-settings)
+passlib[bcrypt]==1.7.4          # password hashing (future auth)
+python-jose[cryptography]==3.3.0 # JWT tokens (future auth)
+
+
+# ── Rate Limiting (optional) ──────────────────────────────────────────────────
+# Uncomment if rate_limit_enabled=true in .env
+# slowapi==0.1.9                # rate limiting middleware for FastAPI
+
+
+# ── Development & Testing ─────────────────────────────────────────────────────
+pytest==8.3.4
+pytest-asyncio==0.25.0
+pytest-cov==6.0.0
+httpx==0.28.1                   # async test client for FastAPI (TestClient)
+faker==33.1.0                   # fake data generation for tests
+ruff==0.8.6                     # fast linter + formatter (replaces flake8/black)
+mypy==1.14.0                    # static type checking
