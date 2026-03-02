@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import (
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.pool import NullPool
 
-from app.core.config import settings  # adjust to your project
+from app.core.config import settings
 
 
 # -------------------------------------------------------------------
@@ -21,11 +21,17 @@ class Base(DeclarativeBase):
 # Async Engine
 # -------------------------------------------------------------------
 
+engine_kwargs = {
+    "echo": settings.DEBUG,
+    "pool_pre_ping": True,
+}
+
+if settings.DEBUG:
+    engine_kwargs["poolclass"] = NullPool
+
 engine = create_async_engine(
-    settings.DATABASE_URL,  # e.g. "postgresql+asyncpg://user:pass@localhost/db"
-    echo=False,              # Set True for SQL debugging
-    pool_pre_ping=True,      # Avoid stale connections
-    poolclass=NullPool if settings.DEBUG else None,
+    settings.DATABASE_URL,
+    **engine_kwargs,
 )
 
 
@@ -41,12 +47,9 @@ AsyncSessionFactory = async_sessionmaker(
 
 
 # -------------------------------------------------------------------
-# Dependency (FastAPI-ready)
+# Dependency
 # -------------------------------------------------------------------
 
 async def get_db() -> AsyncSession:
     async with AsyncSessionFactory() as session:
-        try:
-            yield session
-        finally:
-            await session.close()
+        yield session
